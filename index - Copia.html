@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Frango na Cozinha - Runner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #faf3e0;
+      overflow: hidden;
+    }
+
+    #tela-inicial, #tela-gameover {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      z-index: 1000;
+    }
+
+    #tela-inicial button, #tela-gameover button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      background: #ffbe00;
+      cursor: pointer;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: url('https://static.wixstatic.com/media/21d909_391fe1bba90a44399809e4960286e22a~mv2.png') repeat-x;
+      background-size: auto 120%;
+      animation: fundoScroll 4s linear infinite;
+      overflow: hidden;
+    }
+
+    @keyframes fundoScroll {
+      from { background-position-x: 0; }
+      to { background-position-x: -100vw; }
+    }
+
+    #frango {
+      position: absolute;
+      bottom: 8vh;
+      left: 5%;
+      width: 20vw;
+      height: 20vw;
+      max-width: 150px;
+      max-height: 150px;
+      background: url('https://static.wixstatic.com/media/21d909_0f868621b71f4046888b7720bcc6fcd8~mv2.png') no-repeat center/contain;
+      animation: andarFrango 1s ease-in-out infinite;
+      z-index: 10;
+    }
+
+    #frango::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0px dashed red;
+      border-radius: 50%;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+
+    #sombra-frango {
+      position: absolute;
+      bottom: 5vh;
+      left: calc(2.5% + 10vw / 2 - 25px);
+      width: 90px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      z-index: 5;
+    }
+
+    @keyframes andarFrango {
+      0% { bottom: 8vh; }
+      50% { bottom: 9.5vh; }
+      100% { bottom: 8vh; }
+    }
+
+    .jump {
+      animation: pulo 0.6s ease-out !important;
+    }
+
+    @keyframes pulo {
+      0% { bottom: 8vh; }
+      50% { bottom: 43vh; }
+      100% { bottom: 8vh; }
+    }
+
+    .obstaculo {
+      position: absolute;
+      bottom: 8vh;
+      width: 8vw;
+      height: 8vw;
+      max-width: 80px;
+      max-height: 80px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      animation: mover 2.5s linear forwards;
+      z-index: 10;
+    }
+
+    .obstaculo::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0px dashed blue;
+      border-radius: 50%;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+
+    .sombra-obstaculo {
+      position: absolute;
+      bottom: -3vh;
+      left: calc(50% - 20px);
+      width: 60px;
+      height: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      z-index: 5;
+    }
+
+    @keyframes mover {
+      from { right: -80px; }
+      to { right: 100vw; }
+    }
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div id="tela-inicial">
+    <h1>🍳 Frangote's Run</h1>
+    <button id="btnJogar">Jogar</button>
+  </div>
+
+  <div id="tela-gameover" style="display: none;">
+    <h2>Game Over!</h2>
+    <p id="pontuacao-final">Pontuação: 0</p>
+    <button id="btnReiniciar">Recomeçar</button>
+  </div>
+
+  <div id="score">Pontuação: 0</div>
+  <div id="game">
+    <div id="frango"></div>
+    <div id="sombra-frango"></div>
+  </div>
+
+  <script>
+    const frango = document.getElementById("frango");
+    const game = document.getElementById("game");
+    const scoreDisplay = document.getElementById("score");
+    const telaInicial = document.getElementById("tela-inicial");
+    const telaGameOver = document.getElementById("tela-gameover");
+    const pontuacaoFinal = document.getElementById("pontuacao-final");
+    const btnJogar = document.getElementById("btnJogar");
+    const btnReiniciar = document.getElementById("btnReiniciar");
+
+    const obstaculosImgs = [
+      'https://static.wixstatic.com/media/21d909_072242330fd14b7eb758243bd9971043~mv2.png',
+      'https://static.wixstatic.com/media/21d909_c49a59ac2b8a4f2e8fe3d851767081a3~mv2.png',
+      'https://static.wixstatic.com/media/21d909_662db4de1d014fc2adb20171b84907e7~mv2.png'
+    ];
+
+    let score = 0;
+    let intervaloObstaculo = null;
+
+    btnJogar.addEventListener("click", iniciarJogo);
+    btnReiniciar.addEventListener("click", iniciarJogo);
+
+    function iniciarJogo() {
+      telaInicial.style.display = "none";
+      telaGameOver.style.display = "none";
+      score = 0;
+      scoreDisplay.textContent = "Pontuação: 0";
+      document.querySelectorAll(".obstaculo").forEach(el => el.remove());
+      clearInterval(intervaloObstaculo);
+      intervaloObstaculo = setInterval(criarObstaculo, 1800);
+    }
+
+    function gameOver() {
+      clearInterval(intervaloObstaculo);
+      pontuacaoFinal.textContent = "Pontuação: " + score;
+      telaGameOver.style.display = "flex";
+    }
+
+    function criarObstaculo() {
+      const obstaculo = document.createElement("div");
+      obstaculo.classList.add("obstaculo");
+
+      const sombra = document.createElement("div");
+      sombra.classList.add("sombra-obstaculo");
+      obstaculo.appendChild(sombra);
+
+      const imagem = obstaculosImgs[Math.floor(Math.random() * obstaculosImgs.length)];
+      obstaculo.style.backgroundImage = `url('${imagem}')`;
+      game.appendChild(obstaculo);
+
+      const colisaoInterval = setInterval(() => {
+        const frangoRect = frango.getBoundingClientRect();
+        const obstRect = obstaculo.getBoundingClientRect();
+
+        const frangoCenterX = frangoRect.left + frangoRect.width / 2;
+        const frangoCenterY = frangoRect.top + frangoRect.height / 2;
+        const obstCenterX = obstRect.left + obstRect.width / 2;
+        const obstCenterY = obstRect.top + obstRect.height / 2;
+
+        const dx = frangoCenterX - obstCenterX;
+        const dy = frangoCenterY - obstCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        const frangoRadius = frangoRect.width / 2.5;
+        const obstRadius = obstRect.width / 2.5;
+
+        const colisao = distance < (frangoRadius + obstRadius);
+
+        if (colisao) {
+          clearInterval(colisaoInterval);
+          gameOver();
+          obstaculo.remove();
+        }
+      }, 30);
+
+      obstaculo.addEventListener("animationend", () => {
+        clearInterval(colisaoInterval);
+        if (game.contains(obstaculo)) {
+          obstaculo.remove();
+          score++;
+          scoreDisplay.textContent = "Pontuação: " + score;
+        }
+      });
+    }
+
+    function pular() {
+      if (!frango.classList.contains("jump")) {
+        frango.classList.add("jump");
+        setTimeout(() => {
+          frango.classList.remove("jump");
+        }, 600);
+      }
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.code === "Space") pular();
+    });
+
+    document.addEventListener("touchstart", pular);
+  </script>
+</body>
+</html>
