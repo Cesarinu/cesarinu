@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Frangote's Run</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ffbe00" />
+  <link rel="icon" href="icon-192.png" />
   <style>
     * { box-sizing: border-box; }
     html, body {
@@ -39,6 +42,12 @@
       cursor: pointer;
       border-radius: 10px;
       margin-top: 20px;
+    }
+
+    #installBtn {
+      margin-top: 10px;
+      font-size: 1rem;
+      padding: 10px 20px;
     }
 
     #game {
@@ -145,6 +154,7 @@
       📱 Para uma melhor experiência, ative a <strong>tela cheia</strong> no seu navegador.
     </p>
     <button id="btnJogar">Jogar</button>
+    <button id="installBtn" style="display: none;">Instalar App</button>
   </div>
 
   <div id="tela-gameover" style="display: none;">
@@ -160,6 +170,28 @@
   </div>
 
   <script>
+    let deferredPrompt;
+    const installBtn = document.getElementById("installBtn");
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      installBtn.style.display = 'none';
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+
     const frango = document.getElementById("frango");
     const game = document.getElementById("game");
     const scoreDisplay = document.getElementById("score");
@@ -225,9 +257,7 @@
         const frangoRadius = frangoRect.width / 2.5;
         const obstRadius = obstRect.width / 2.5;
 
-        const colisao = distance < (frangoRadius + obstRadius);
-
-        if (colisao) {
+        if (distance < (frangoRadius + obstRadius)) {
           clearInterval(colisaoInterval);
           gameOver();
           obstaculo.remove();
