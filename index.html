@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Frangote's Run</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png" type="image/png" />
@@ -253,6 +253,15 @@
         }
       });
     }
+
+btnFullscreen.addEventListener("touchstart", () => {
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen().catch(err => {
+      alert("O modo tela cheia foi bloqueado pelo navegador.");
+    });
+  }
+});
+
 
     function pular() {
       if (!frango.classList.contains("jump")) {
