@@ -92,8 +92,8 @@
     .obstaculo {
       position: absolute;
       bottom: 10%;
-      width: 10%;
-      height: 10%;
+      width: 12%;
+      height: 12%;
       max-width: 80px;
       max-height: 80px;
       background-repeat: no-repeat;
@@ -270,14 +270,15 @@ function loopObstaculos() {
 
       const movimentoInterval = setInterval(() => {
   const obstRect = obstaculo.getBoundingClientRect();
-  if (obstRect.right < 0) {
+  if (obstRect.right < window.innerWidth * 0.1) {
     clearInterval(movimentoInterval);
     clearInterval(colisaoInterval);
-    if (game.contains(obstaculo)) {
-      obstaculo.remove();
-      score++;
-      scoreDisplay.textContent = "Pontuação: " + score;
-    }
+   if (game.contains(obstaculo)) {
+  score++;
+  scoreDisplay.textContent = "Pontuação: " + score;
+  obstaculo.remove();
+}
+
   }
 }, 30);
     }
