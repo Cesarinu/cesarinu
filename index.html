@@ -139,15 +139,17 @@
       to { right: 100vw; }
     }
 
-    #score {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 2rem;
-      font-weight: bold;
-      color: #333;
-      z-index: 100;
-    }
+  #score {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  z-index: 100;
+  text-shadow: 1px 1px 2px #fff;
+}
   </style>
 </head>
 <body>
@@ -166,11 +168,12 @@
     <button id="btnReiniciar">Recomeçar</button>
   </div>
 
-  <div id="score">Pontuação: 0</div>
+ 
 
   <!-- NOVO CONTAINER CENTRALIZADOR -->
   <div id="container">
     <div id="game">
+ <div id="score">Pontuação: 0</div>
       <div id="frango"></div>
       <div id="sombra-frango"></div>
     </div>
