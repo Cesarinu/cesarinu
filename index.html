@@ -194,30 +194,41 @@
     let score = 0;
     let intervaloObstaculo = null;
     let tempoEntreObstaculos = 1800;
-    let velocidadeObstaculo = 2.5;
+    let velocidadeObstaculo = 1.8;
     let aumentoDificuldade = null;
 
-    function iniciarJogo() {
-      telaInicial.style.display = "none";
-      telaGameOver.style.display = "none";
-      score = 0;
-      tempoEntreObstaculos = 1800;
-      velocidadeObstaculo = 2.5;
-      scoreDisplay.textContent = "Pontuação: 0";
+   function iniciarJogo() {
+  telaInicial.style.display = "none";
+  telaGameOver.style.display = "none";
+  score = 0;
+  scoreDisplay.textContent = "Pontuação: 0";
 
-      document.querySelectorAll(".obstaculo").forEach(el => el.remove());
-      clearInterval(intervaloObstaculo);
-      clearInterval(aumentoDificuldade);
+  // Limites iniciais de intervalo
+  minIntervalo = 1200;
+  maxIntervalo = 2500;
 
-      intervaloObstaculo = setInterval(criarObstaculo, tempoEntreObstaculos);
+  velocidadeObstaculo = 2.5;
 
-      aumentoDificuldade = setInterval(() => {
-        if (tempoEntreObstaculos > 800) tempoEntreObstaculos -= 100;
-        if (velocidadeObstaculo > 1.2) velocidadeObstaculo -= 0.1;
-        clearInterval(intervaloObstaculo);
-        intervaloObstaculo = setInterval(criarObstaculo, tempoEntreObstaculos);
-      }, 5000);
-    }
+  document.querySelectorAll(".obstaculo").forEach(el => el.remove());
+  clearTimeout(intervaloObstaculo);
+  clearInterval(aumentoDificuldade);
+
+  loopObstaculos(); // 👈 Chama a função com tempo variável
+
+  aumentoDificuldade = setInterval(() => {
+    if (maxIntervalo > 1500) maxIntervalo -= 100;
+    if (minIntervalo > 700) minIntervalo -= 100;
+    if (velocidadeObstaculo > 1.2) velocidadeObstaculo -= 0.1;
+  }, 5000);
+}
+
+
+function loopObstaculos() {
+  criarObstaculo();
+  const intervalo = Math.floor(Math.random() * (maxIntervalo - minIntervalo) + minIntervalo);
+  intervaloObstaculo = setTimeout(loopObstaculos, intervalo);
+}
+
 
     function gameOver() {
       clearInterval(intervaloObstaculo);
@@ -235,6 +246,7 @@
       const sombra = document.createElement("div");
       sombra.classList.add("sombra-obstaculo");
       obstaculo.appendChild(sombra);
+
 
       const imagem = obstaculosImgs[Math.floor(Math.random() * obstaculosImgs.length)];
       obstaculo.style.backgroundImage = `url('${imagem}')`;
@@ -303,6 +315,9 @@
       requestAnimationFrame(animarFundo);
     }
     animarFundo();
+
+let minIntervalo = 1200;
+let maxIntervalo = 2500;
   </script>
 </body>
 </html>
