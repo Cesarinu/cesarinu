@@ -55,17 +55,18 @@
       text-shadow: 1px 1px 2px #fff;
     }
 
-#frango {
-  position: absolute;
-  bottom: 10%;
-  left: 10%;
-  width: 25%;
-  height: 25%;
-  background-image: url('https://static.wixstatic.com/media/21d909_d090fe89ad0145308ea5b92048be7360~mv2.gif');
-background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  z-index: 10;}
+    #frango {
+      position: absolute;
+      bottom: 10%;
+      left: 10%;
+      width: 25%;
+      height: 25%;
+      background-image: url('https://static.wixstatic.com/media/21d909_d090fe89ad0145308ea5b92048be7360~mv2.gif');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 10;
+    }
 
     #sombra-frango {
       position: absolute;
@@ -100,6 +101,7 @@ background-size: contain;
       background-size: contain;
       animation: mover linear forwards;
       z-index: 10;
+      right: -80px;
     }
 
     .sombra-obstaculo {
@@ -146,7 +148,7 @@ background-size: contain;
       margin-top: 20px;
     }
   </style>
-</head>
+ </head>
 <body>
 
   <div id="tela-inicial">
@@ -254,14 +256,18 @@ background-size: contain;
         }
       }, 30);
 
-      obstaculo.addEventListener("animationend", () => {
-        clearInterval(colisaoInterval);
-        if (game.contains(obstaculo)) {
-          obstaculo.remove();
-          score++;
-          scoreDisplay.textContent = "Pontuação: " + score;
-        }
-      });
+      const movimentoInterval = setInterval(() => {
+  const obstRect = obstaculo.getBoundingClientRect();
+  if (obstRect.right < 0) {
+    clearInterval(movimentoInterval);
+    clearInterval(colisaoInterval);
+    if (game.contains(obstaculo)) {
+      obstaculo.remove();
+      score++;
+      scoreDisplay.textContent = "Pontuação: " + score;
+    }
+  }
+}, 30);
     }
 
     function pular() {
