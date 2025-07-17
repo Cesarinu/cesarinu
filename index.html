@@ -55,11 +55,11 @@
       margin-top: 20px;
     }
 
- #game {
+#game {
   position: relative;
   width: 100%;
-  max-width: 100vh; /* limita para manter proporção mesmo em telas mais largas */
-  aspect-ratio: 16 / 9;
+  max-width: 100vh; /* garante que o quadrado nunca passe da altura da tela */
+  aspect-ratio: 1 / 1; /* proporção quadrada */
   background: url('https://static.wixstatic.com/media/21d909_391fe1bba90a44399809e4960286e22a~mv2.png') repeat-x;
   background-size: auto 120%;
   overflow: hidden;
