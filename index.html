@@ -17,6 +17,17 @@
       background: #faf3e0;
       overflow: hidden;
     }
+#container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #faf3e0;
+  overflow: hidden;
+}
 
     #tela-inicial, #tela-gameover {
       position: fixed;
@@ -44,21 +55,21 @@
       margin-top: 20px;
     }
 
-    #game {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      background: url('https://static.wixstatic.com/media/21d909_391fe1bba90a44399809e4960286e22a~mv2.png') repeat-x;
-      background-size: auto 120%;
-      animation: fundoScroll 4s linear infinite;
-      overflow: hidden;
-      touch-action: manipulation;
-    }
+ #game {
+  position: relative;
+  width: 100%;
+  max-width: 100vh; /* limita para manter proporção mesmo em telas mais largas */
+  aspect-ratio: 16 / 9;
+  background: url('https://static.wixstatic.com/media/21d909_391fe1bba90a44399809e4960286e22a~mv2.png') repeat-x;
+  background-size: auto 120%;
+  overflow: hidden;
+  touch-action: manipulation;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
 
-    @keyframes fundoScroll {
-      from { background-position-x: 0; }
-      to { background-position-x: -100vw; }
-    }
+
+    
 
     #frango {
       position: absolute;
@@ -68,14 +79,14 @@
       height: 20vw;
       max-width: 150px;
       max-height: 150px;
-      background: url('https://static.wixstatic.com/media/21d909_0f868621b71f4046888b7720bcc6fcd8~mv2.png') no-repeat center/contain;
+      background: url('https://static.wixstatic.com/media/21d909_d090fe89ad0145308ea5b92048be7360~mv2.gif') no-repeat center/contain;
       animation: andarFrango 1s ease-in-out infinite;
       z-index: 10;
     }
 
     #sombra-frango {
       position: absolute;
-      bottom: 5vh;
+      bottom: 7vh;
       left: calc(2.5% + 10vw / 2 - 25px);
       width: 90px;
       height: 30px;
@@ -100,7 +111,7 @@
 
     .obstaculo {
       position: absolute;
-      bottom: 8vh;
+      bottom: 10vh;
       width: 8vw;
       height: 8vw;
       max-width: 80px;
@@ -144,7 +155,7 @@
     <h1>🍳 Frangote's Run</h1>
     <button id="btnJogar">Jogar</button>
     <button id="btnFullscreen">Tela cheia</button>
-    <p style="max-width: 400px; font-size: 1rem; margin-top: 10px;">
+    <p style="max-width: 300px; font-size: 1rem; margin-top: 10px;">
       📱 Para uma melhor experiência, adicione este jogo à sua tela inicial.
     </p>
   </div>
@@ -156,10 +167,15 @@
   </div>
 
   <div id="score">Pontuação: 0</div>
-  <div id="game">
-    <div id="frango"></div>
-    <div id="sombra-frango"></div>
+
+  <!-- NOVO CONTAINER CENTRALIZADOR -->
+  <div id="container">
+    <div id="game">
+      <div id="frango"></div>
+      <div id="sombra-frango"></div>
+    </div>
   </div>
+
 
   <script>
     const frango = document.getElementById("frango");
@@ -180,6 +196,10 @@
 
     let score = 0;
     let intervaloObstaculo = null;
+    let tempoEntreObstaculos = 1800; // começa em 1.8 segundos
+    let velocidadeObstaculo = 2.5;   // começa com 2.5s de duração da animação
+    let aumentoDificuldade = null;
+
 
     btnJogar.addEventListener("click", iniciarJogo);
     btnReiniciar.addEventListener("click", iniciarJogo);
@@ -192,24 +212,42 @@
     });
 
     function iniciarJogo() {
-      telaInicial.style.display = "none";
-      telaGameOver.style.display = "none";
-      score = 0;
-      scoreDisplay.textContent = "Pontuação: 0";
-      document.querySelectorAll(".obstaculo").forEach(el => el.remove());
-      clearInterval(intervaloObstaculo);
-      intervaloObstaculo = setInterval(criarObstaculo, 1800);
-    }
+  telaInicial.style.display = "none";
+  telaGameOver.style.display = "none";
+  score = 0;
+  tempoEntreObstaculos = 1800;
+  velocidadeObstaculo = 2.5;
+  scoreDisplay.textContent = "Pontuação: 0";
+  document.querySelectorAll(".obstaculo").forEach(el => el.remove());
+  clearInterval(intervaloObstaculo);
+  clearInterval(aumentoDificuldade);
+
+  intervaloObstaculo = setInterval(criarObstaculo, tempoEntreObstaculos);
+
+  // Aumenta a dificuldade a cada 5 segundos
+  aumentoDificuldade = setInterval(() => {
+    if (tempoEntreObstaculos > 800) tempoEntreObstaculos -= 100; // mínimo de 800ms
+    if (velocidadeObstaculo > 1.2) velocidadeObstaculo -= 0.1;    // mínimo de 1.2s
+
+    clearInterval(intervaloObstaculo);
+    intervaloObstaculo = setInterval(criarObstaculo, tempoEntreObstaculos);
+  }, 5000);
+}
+
 
     function gameOver() {
       clearInterval(intervaloObstaculo);
       pontuacaoFinal.textContent = "Pontuação: " + score;
       telaGameOver.style.display = "flex";
+clearInterval(aumentoDificuldade);
+
     }
 
     function criarObstaculo() {
       const obstaculo = document.createElement("div");
       obstaculo.classList.add("obstaculo");
+obstaculo.style.animationDuration = velocidadeObstaculo + "s";
+
 
       const sombra = document.createElement("div");
       sombra.classList.add("sombra-obstaculo");
@@ -283,6 +321,18 @@ btnFullscreen.addEventListener("touchstart", () => {
         navigator.serviceWorker.register('service-worker.js');
       });
     }
+
+let posicaoFundo = 0;
+
+function animarFundo() {
+  posicaoFundo -= 6; // velocidade (quanto maior o número, mais rápido)
+  game.style.backgroundPositionX = posicaoFundo + "px";
+  requestAnimationFrame(animarFundo);
+}
+
+animarFundo();
+
+
   </script>
 </body>
 </html>
