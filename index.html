@@ -2,92 +2,71 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Frangote's Run</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png" type="image/png" />
   <meta name="theme-color" content="#ffbe00" />
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       font-family: sans-serif;
       background: #faf3e0;
-      overflow: hidden;
     }
-#container {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #faf3e0;
-  overflow: hidden;
-}
 
-    #tela-inicial, #tela-gameover {
+    #container {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.75);
+      width: 100vw;
+      height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: #fff;
-      z-index: 1000;
-      text-align: center;
-      padding: 20px;
+      background: #faf3e0;
     }
 
-    #tela-inicial button, #tela-gameover button, #btnFullscreen {
-      padding: 15px 30px;
-      font-size: 1.2rem;
-      border: none;
-      background: #ffbe00;
-      color: #000;
-      cursor: pointer;
+    #game {
+      position: relative;
+      width: 100%;
+      max-width: 100vh;
+      aspect-ratio: 1 / 1;
+      background: url('https://static.wixstatic.com/media/21d909_391fe1bba90a44399809e4960286e22a~mv2.png') repeat-x;
+      background-size: auto 120%;
+      overflow: hidden;
       border-radius: 10px;
-      margin-top: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
     }
 
-#game {
-  position: relative;
-  width: 100%;
-  max-width: 100vh; /* garante que o quadrado nunca passe da altura da tela */
-  aspect-ratio: 1 / 1; /* proporção quadrada */
-  background: url('https://static.wixstatic.com/media/21d909_391fe1bba90a44399809e4960286e22a~mv2.png') repeat-x;
-  background-size: auto 120%;
-  overflow: hidden;
-  touch-action: manipulation;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
-}
-
-
-    
+    #score {
+      position: absolute;
+      top: 2%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      z-index: 100;
+      text-shadow: 1px 1px 2px #fff;
+    }
 
     #frango {
       position: absolute;
-      bottom: 8vh;
-      left: 5%;
-      width: 20vw;
-      height: 20vw;
-      max-width: 150px;
-      max-height: 150px;
-      background: url('https://static.wixstatic.com/media/21d909_d090fe89ad0145308ea5b92048be7360~mv2.gif') no-repeat center/contain;
-      animation: andarFrango 1s ease-in-out infinite;
+      bottom: 10%;
+      left: 10%;
+      width: 12%;
       z-index: 10;
     }
 
     #sombra-frango {
       position: absolute;
-      bottom: 7vh;
-      left: calc(2.5% + 10vw / 2 - 25px);
+      bottom: 7%;
+      left: calc(10% + 2vw);
       width: 90px;
       height: 30px;
       background: rgba(0, 0, 0, 0.3);
@@ -95,23 +74,19 @@
       z-index: 5;
     }
 
-    @keyframes andarFrango {
-      0% { bottom: 8vh; }
-      50% { bottom: 9.5vh; }
-      100% { bottom: 8vh; }
+    .jump {
+      animation: pulo 0.6s ease-out !important;
     }
 
-    .jump { animation: pulo 0.6s ease-out !important; }
-
     @keyframes pulo {
-      0% { bottom: 8vh; }
-      50% { bottom: 43vh; }
-      100% { bottom: 8vh; }
+      0% { bottom: 10%; }
+      50% { bottom: 45%; }
+      100% { bottom: 10%; }
     }
 
     .obstaculo {
       position: absolute;
-      bottom: 10vh;
+      bottom: 10%;
       width: 8vw;
       height: 8vw;
       max-width: 80px;
@@ -119,7 +94,7 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: contain;
-      animation: mover 2.5s linear forwards;
+      animation: mover linear forwards;
       z-index: 10;
     }
 
@@ -139,20 +114,37 @@
       to { right: 100vw; }
     }
 
-  #score {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
-  z-index: 100;
-  text-shadow: 1px 1px 2px #fff;
-}
+    #tela-inicial, #tela-gameover {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      z-index: 1000;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #tela-inicial button,
+    #tela-gameover button,
+    #btnFullscreen {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      background: #ffbe00;
+      color: #000;
+      cursor: pointer;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
+
   <div id="tela-inicial">
     <h1>🍳 Frangote's Run</h1>
     <button id="btnJogar">Jogar</button>
@@ -168,17 +160,13 @@
     <button id="btnReiniciar">Recomeçar</button>
   </div>
 
- 
-
-  <!-- NOVO CONTAINER CENTRALIZADOR -->
   <div id="container">
     <div id="game">
- <div id="score">Pontuação: 0</div>
+      <div id="score">Pontuação: 0</div>
       <div id="frango"></div>
       <div id="sombra-frango"></div>
     </div>
   </div>
-
 
   <script>
     const frango = document.getElementById("frango");
@@ -199,58 +187,44 @@
 
     let score = 0;
     let intervaloObstaculo = null;
-    let tempoEntreObstaculos = 1800; // começa em 1.8 segundos
-    let velocidadeObstaculo = 2.5;   // começa com 2.5s de duração da animação
+    let tempoEntreObstaculos = 1800;
+    let velocidadeObstaculo = 2.5;
     let aumentoDificuldade = null;
 
-
-    btnJogar.addEventListener("click", iniciarJogo);
-    btnReiniciar.addEventListener("click", iniciarJogo);
-    btnFullscreen.addEventListener("click", () => {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(err => {
-          alert("O modo tela cheia foi bloqueado pelo navegador.");
-        });
-      }
-    });
-
     function iniciarJogo() {
-  telaInicial.style.display = "none";
-  telaGameOver.style.display = "none";
-  score = 0;
-  tempoEntreObstaculos = 1800;
-  velocidadeObstaculo = 2.5;
-  scoreDisplay.textContent = "Pontuação: 0";
-  document.querySelectorAll(".obstaculo").forEach(el => el.remove());
-  clearInterval(intervaloObstaculo);
-  clearInterval(aumentoDificuldade);
+      telaInicial.style.display = "none";
+      telaGameOver.style.display = "none";
+      score = 0;
+      tempoEntreObstaculos = 1800;
+      velocidadeObstaculo = 2.5;
+      scoreDisplay.textContent = "Pontuação: 0";
 
-  intervaloObstaculo = setInterval(criarObstaculo, tempoEntreObstaculos);
+      document.querySelectorAll(".obstaculo").forEach(el => el.remove());
+      clearInterval(intervaloObstaculo);
+      clearInterval(aumentoDificuldade);
 
-  // Aumenta a dificuldade a cada 5 segundos
-  aumentoDificuldade = setInterval(() => {
-    if (tempoEntreObstaculos > 800) tempoEntreObstaculos -= 100; // mínimo de 800ms
-    if (velocidadeObstaculo > 1.2) velocidadeObstaculo -= 0.1;    // mínimo de 1.2s
+      intervaloObstaculo = setInterval(criarObstaculo, tempoEntreObstaculos);
 
-    clearInterval(intervaloObstaculo);
-    intervaloObstaculo = setInterval(criarObstaculo, tempoEntreObstaculos);
-  }, 5000);
-}
-
+      aumentoDificuldade = setInterval(() => {
+        if (tempoEntreObstaculos > 800) tempoEntreObstaculos -= 100;
+        if (velocidadeObstaculo > 1.2) velocidadeObstaculo -= 0.1;
+        clearInterval(intervaloObstaculo);
+        intervaloObstaculo = setInterval(criarObstaculo, tempoEntreObstaculos);
+      }, 5000);
+    }
 
     function gameOver() {
       clearInterval(intervaloObstaculo);
+      clearInterval(aumentoDificuldade);
       pontuacaoFinal.textContent = "Pontuação: " + score;
       telaGameOver.style.display = "flex";
-clearInterval(aumentoDificuldade);
-
     }
 
     function criarObstaculo() {
       const obstaculo = document.createElement("div");
       obstaculo.classList.add("obstaculo");
-obstaculo.style.animationDuration = velocidadeObstaculo + "s";
-
+      obstaculo.style.animationDuration = velocidadeObstaculo + "s";
+      obstaculo.style.right = "-80px";
 
       const sombra = document.createElement("div");
       sombra.classList.add("sombra-obstaculo");
@@ -258,27 +232,18 @@ obstaculo.style.animationDuration = velocidadeObstaculo + "s";
 
       const imagem = obstaculosImgs[Math.floor(Math.random() * obstaculosImgs.length)];
       obstaculo.style.backgroundImage = `url('${imagem}')`;
+
       game.appendChild(obstaculo);
 
       const colisaoInterval = setInterval(() => {
         const frangoRect = frango.getBoundingClientRect();
         const obstRect = obstaculo.getBoundingClientRect();
 
-        const frangoCenterX = frangoRect.left + frangoRect.width / 2;
-        const frangoCenterY = frangoRect.top + frangoRect.height / 2;
-        const obstCenterX = obstRect.left + obstRect.width / 2;
-        const obstCenterY = obstRect.top + obstRect.height / 2;
-
-        const dx = frangoCenterX - obstCenterX;
-        const dy = frangoCenterY - obstCenterY;
+        const dx = (frangoRect.left + frangoRect.width / 2) - (obstRect.left + obstRect.width / 2);
+        const dy = (frangoRect.top + frangoRect.height / 2) - (obstRect.top + obstRect.height / 2);
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        const frangoRadius = frangoRect.width / 2.5;
-        const obstRadius = obstRect.width / 2.5;
-
-        const colisao = distance < (frangoRadius + obstRadius);
-
-        if (colisao) {
+        if (distance < (frangoRect.width / 2.5 + obstRect.width / 2.5)) {
           clearInterval(colisaoInterval);
           gameOver();
           obstaculo.remove();
@@ -295,29 +260,25 @@ obstaculo.style.animationDuration = velocidadeObstaculo + "s";
       });
     }
 
-btnFullscreen.addEventListener("touchstart", () => {
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen().catch(err => {
-      alert("O modo tela cheia foi bloqueado pelo navegador.");
-    });
-  }
-});
-
-
     function pular() {
       if (!frango.classList.contains("jump")) {
         frango.classList.add("jump");
-        setTimeout(() => {
-          frango.classList.remove("jump");
-        }, 600);
+        setTimeout(() => frango.classList.remove("jump"), 600);
       }
     }
 
-    document.addEventListener("keydown", e => {
-      if (e.code === "Space") pular();
-    });
-
+    document.addEventListener("keydown", e => { if (e.code === "Space") pular(); });
     document.addEventListener("touchstart", pular);
+
+    btnJogar.addEventListener("click", iniciarJogo);
+    btnReiniciar.addEventListener("click", iniciarJogo);
+    btnFullscreen.addEventListener("click", () => {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {
+          alert("O modo tela cheia foi bloqueado pelo navegador.");
+        });
+      }
+    });
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -325,17 +286,13 @@ btnFullscreen.addEventListener("touchstart", () => {
       });
     }
 
-let posicaoFundo = 0;
-
-function animarFundo() {
-  posicaoFundo -= 6; // velocidade (quanto maior o número, mais rápido)
-  game.style.backgroundPositionX = posicaoFundo + "px";
-  requestAnimationFrame(animarFundo);
-}
-
-animarFundo();
-
-
+    let posicaoFundo = 0;
+    function animarFundo() {
+      posicaoFundo -= 6;
+      game.style.backgroundPositionX = posicaoFundo + "px";
+      requestAnimationFrame(animarFundo);
+    }
+    animarFundo();
   </script>
 </body>
 </html>
