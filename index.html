@@ -69,7 +69,7 @@
 
     #sombra-frango {
       position: absolute;
-      bottom: 5%;
+      bottom: 7%;
       left: calc(10% + 2vw);
       width: 15%;
       height: 5%;
@@ -146,6 +146,22 @@
       border-radius: 10px;
       margin-top: 20px;
     }
+
+#container {
+  flex-direction: column;
+  align-items: center;
+}
+
+#controle {
+  width: 100%;
+  max-width: 100vh;
+  aspect-ratio: 3 / 1;
+  margin-top: 10px;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
   </style>
  </head>
 <body>
@@ -171,7 +187,11 @@
       <div id="frango"></div>
       <div id="sombra-frango"></div>
     </div>
+<img id="controle" src="https://static.wixstatic.com/media/21d909_be53b357aea646e69cdd91a4d83acb91~mv2.png" alt="Controle" />
+
   </div>
+
+
 
   <script>
     const frango = document.getElementById("frango");
